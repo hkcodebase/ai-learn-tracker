@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<title>AI Engineer Prep Tracker</title>
+<style>
+/* ── Reset & base ─────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue:      #1a3c5e;
+  --blue-mid:  #2e75b6;
+  --blue-lt:   #e8f1f8;
+  --green:     #22863a;
+  --green-lt:  #e6f4ea;
+  --amber:     #b45309;
+  --amber-lt:  #fef3cd;
+  --red:       #a32d2d;
+  --red-lt:    #fdecea;
+  --gray-100:  #f7f8fa;
+  --gray-200:  #eef0f3;
+  --gray-300:  #d5d9e0;
+  --gray-600:  #555e6b;
+  --gray-800:  #1a1d23;
+  --radius:    6px;
+  --sidebar-w: 220px;
+  --transition: 0.18s ease;
+}
+
+html { height: 100%; }
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--gray-800);
+  background: var(--gray-100);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── App shell ────────────────────────────────── */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── Top header ───────────────────────────────── */
+.top-bar {
+  background: var(--blue);
+  color: #fff;
+  padding: 0 1.5rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+.top-bar-logo {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.top-bar-logo span { color: #7dd3fc; }
+.top-bar-spacer { flex: 1; }
+.top-bar-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.7rem;
+  color: #c7d8eb;
+}
+.top-bar-bar {
+  width: 120px;
+  height: 5px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.top-bar-fill {
+  height: 100%;
+  background: #7dd3fc;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+/* ── Main layout (sidebar + content) ─────────── */
+.main { display: flex; flex: 1; overflow: hidden; }
+
+/* ── Sidebar ──────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: #fff;
+  border-right: 1px solid var(--gray-200);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 56px;
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.sidebar-section {
+  padding: 1rem 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+.sidebar-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 0.6rem;
+}
+
+/* Week list in sidebar */
+.week-list { list-style: none; }
+.week-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--transition);
+  margin-bottom: 2px;
+}
+.week-item:hover { background: var(--gray-100); }
+.week-item.active { background: var(--blue-lt); }
+.week-item.active .wi-num { color: var(--blue); }
+.week-item.active .wi-title { color: var(--blue); font-weight: 600; }
+.wi-num {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--gray-600);
+  width: 20px;
+  flex-shrink: 0;
+}
+.wi-title {
+  font-size: 0.7rem;
+  color: var(--gray-600);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wi-bar-wrap { width: 32px; flex-shrink: 0; }
+.wi-bar {
+  height: 4px;
+  background: var(--gray-200);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.wi-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.3s; }
+.week-item.done .wi-num::after { content: " ✓"; color: var(--green); }
+
+/* Date settings in sidebar */
+.sidebar-settings { padding: 0.9rem 0.75rem; flex-shrink: 0; }
+.setting-row { margin-bottom: 0.75rem; }
+.setting-label { font-size: 0.62rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 4px; }
+.setting-input {
+  font-family: inherit;
+  font-size: 0.75rem;
+  width: 100%;
+  padding: 5px 7px;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  color: var(--gray-800);
+  background: #fff;
+}
+.setting-input:focus { outline: none; border-color: var(--blue-mid); }
+.setting-hint { font-size: 0.62rem; color: var(--gray-600); margin-top: 3px; font-style: italic; }
+.setting-toggle-row { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+.setting-toggle-row input { accent-color: var(--blue); cursor: pointer; }
+.setting-toggle-label { font-size: 0.68rem; color: var(--gray-600); cursor: pointer; }
+.sidebar-btn {
+  font-family: inherit;
+  font-size: 0.65rem;
+  width: 100%;
+  padding: 5px 0;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--gray-600);
+  cursor: pointer;
+  margin-top: 6px;
+  transition: all var(--transition);
+}
+.sidebar-btn:hover { border-color: var(--blue); color: var(--blue); }
+.sidebar-btn.danger { color: var(--red); }
+.sidebar-btn.danger:hover { border-color: var(--red); background: var(--red-lt); }
+
+/* ── Content area ─────────────────────────────── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  max-width: 720px;
+}
+
+/* ── Week panel ───────────────────────────────── */
+.week-panel { display: none; }
+.week-panel.active { display: block; }
+
+.week-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+.week-num-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  background: var(--blue);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.week-title { font-size: 1.05rem; font-weight: 700; color: var(--blue); flex: 1; }
+.week-dates { font-size: 0.68rem; color: var(--gray-600); margin-top: 2px; }
+.week-goal {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  font-style: italic;
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid var(--blue-mid);
+  margin: 0.75rem 0 1.25rem;
+  background: var(--blue-lt);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+/* Week progress bar */
+.week-prog-wrap { margin-bottom: 1.25rem; }
+.week-prog-meta { display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--gray-600); margin-bottom: 4px; }
+.week-prog-bar { height: 5px; background: var(--gray-200); border-radius: 3px; overflow: hidden; }
+.week-prog-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width 0.3s; }
+
+/* ── Day card ─────────────────────────────────── */
+.day-card {
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  transition: box-shadow var(--transition), border-color var(--transition);
+}
+.day-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.day-card.done { border-color: #a3d9b1; }
+.day-card.done .day-top { background: var(--green-lt); }
+.day-card.skipped { opacity: 0.5; }
+
+.day-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 0.65rem 0.9rem;
+  background: var(--gray-100);
+  cursor: pointer;
+  transition: background var(--transition);
+  user-select: none;
+}
+.day-top:hover { background: var(--gray-200); }
+.day-card.done .day-top:hover { background: #c8ecd3; }
+
+.day-check {
+  width: 17px; height: 17px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  accent-color: var(--green);
+  cursor: pointer;
+}
+.day-meta { flex: 1; min-width: 0; }
+.day-date-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 2px; }
+.day-date { font-weight: 700; font-size: 0.78rem; color: var(--blue); }
+.day-topic-tag {
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 3px;
+  background: var(--blue-lt);
+  color: var(--blue);
+}
+.day-sub { font-size: 0.75rem; color: var(--gray-600); }
+.day-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.day-hrs { font-size: 0.65rem; font-weight: 700; color: var(--amber); background: var(--amber-lt); padding: 2px 7px; border-radius: 3px; }
+.day-expand-btn { font-size: 0.68rem; color: var(--gray-600); background: none; border: none; cursor: pointer; padding: 2px 4px; transition: transform var(--transition); }
+.day-card.expanded .day-expand-btn { transform: rotate(180deg); }
+
+/* Day body — collapsible */
+.day-body {
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease, padding 0.15s ease;
+}
+.day-card.expanded .day-body {
+  max-height: 600px;
+  padding: 0.8rem 0.9rem 0.9rem;
+}
+
+.day-concepts {
+  font-size: 0.77rem;
+  color: #333;
+  margin-bottom: 0.6rem;
+  line-height: 1.6;
+}
+.day-concepts b { color: var(--blue); }
+
+.res-label { font-size: 0.62rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.day-resources { margin-bottom: 0.7rem; }
+.res-link {
+  display: inline-block;
+  font-size: 0.7rem;
+  color: var(--blue-mid);
+  text-decoration: none;
+  border: 1px solid var(--gray-300);
+  border-radius: 3px;
+  padding: 3px 8px;
+  margin: 0 5px 5px 0;
+  background: var(--gray-100);
+  transition: all var(--transition);
+}
+.res-link:hover { border-color: var(--blue-mid); background: var(--blue-lt); }
+
+.day-notes-label { font-size: 0.62rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px; }
+.day-notes {
+  width: 100%;
+  min-height: 60px;
+  font-family: inherit;
+  font-size: 0.77rem;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  padding: 7px 9px;
+  color: var(--gray-800);
+  resize: vertical;
+  line-height: 1.55;
+  transition: border-color var(--transition);
+}
+.day-notes:focus { outline: none; border-color: var(--blue-mid); }
+
+.day-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem; }
+.save-status { font-size: 0.65rem; color: var(--gray-600); min-height: 14px; }
+.save-status.saved { color: var(--green); }
+.skip-day-btn {
+  font-family: inherit;
+  font-size: 0.63rem;
+  color: var(--gray-600);
+  background: none;
+  border: 1px solid var(--gray-300);
+  border-radius: 3px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+.skip-day-btn:hover { border-color: var(--red); color: var(--red); }
+.day-card.skipped .skip-day-btn { color: var(--green); border-color: #a3d9b1; }
+
+/* ── Mobile sidebar overlay ───────────────────── */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px;
+}
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 90;
+}
+
+@media (max-width: 700px) {
+  .mobile-menu-btn { display: block; }
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: 56px;
+    height: calc(100vh - 56px);
+    z-index: 95;
+    transition: left var(--transition);
+    box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+  }
+  .sidebar.open { left: 0; }
+  .sidebar-overlay.open { display: block; }
+  .content { padding: 1rem; }
+}
+
+/* ── Scrollbar styling ────────────────────────── */
+.sidebar::-webkit-scrollbar,
+.content::-webkit-scrollbar { width: 5px; }
+.sidebar::-webkit-scrollbar-track,
+.content::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
+.content::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
+</style>
+
+<style id="editorial-redesign">
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+ --accent:#E5401E;
+ --paper:#F4F2EC;
+ --panel:#FBFAF6;
+ --border:#E0DDD3;
+ --text:#16171A;
+ --muted:#5C5F66;
+ --soft:#A7A39A;
+}
+body{
+ font-family:'IBM Plex Sans',sans-serif !important;
+ background:var(--paper)!important;
+ color:var(--text)!important;
+}
+body:before{
+ content:'';position:fixed;inset:0;pointer-events:none;opacity:.35;
+ background-image:
+ linear-gradient(var(--border) 1px, transparent 1px),
+ linear-gradient(90deg,var(--border) 1px, transparent 1px);
+ background-size:60px 60px;
+ mask-image:radial-gradient(circle at center, black 40%, transparent 90%);
+}
+.top-bar,.sidebar,.day-card,.week-goal{box-shadow:none!important;}
+.top-bar{
+ background:var(--panel)!important;
+ color:var(--text)!important;
+ border-bottom:1px solid var(--border);
+ height:72px;
+}
+.top-bar-logo{
+ font-family:'Space Grotesk',sans-serif;
+ font-size:1.15rem;
+ color:var(--text)!important;
+}
+.top-bar-logo span,.week-title,.day-date{color:var(--accent)!important;}
+.sidebar{
+ width:344px!important;
+ background:var(--panel)!important;
+ border-right:1px solid var(--border)!important;
+}
+.sidebar-label,.setting-label,.day-notes-label,.res-label,.week-num-badge,.wi-num,.top-bar-progress{
+ font-family:'IBM Plex Mono',monospace!important;
+ letter-spacing:.08em;
+}
+.week-item.active{
+ background:#f7f4ec!important;
+ border-left:3px solid var(--accent);
+ border-radius:0;
+}
+.content{max-width:980px!important;padding:2rem!important;}
+.week-title{
+ font-family:'Space Grotesk',sans-serif;
+ font-size:1.8rem!important;
+}
+.week-goal{
+ background:#f7f4ec!important;
+ border-left:3px solid var(--accent)!important;
+ color:var(--muted)!important;
+}
+.day-card{
+ background:var(--panel)!important;
+ border:1px solid var(--border)!important;
+ border-left:3px solid var(--accent)!important;
+ border-radius:0!important;
+}
+.day-top{background:transparent!important;}
+.day-card:hover{transform:none!important;}
+.day-sub,.setting-hint,.week-dates,.save-status,.wi-title{color:var(--muted)!important;}
+.day-topic-tag{
+ background:#f7f4ec!important;
+ color:var(--accent)!important;
+ border:1px solid var(--border);
+ border-radius:0;
+}
+.day-hrs,.sidebar-btn,.res-link{
+ border-radius:0!important;
+}
+.day-notes,.setting-input{
+ background:#fffdf8;
+ border:1px solid var(--border)!important;
+ border-radius:0!important;
+}
+.week-prog-bar,.wi-bar,.top-bar-bar{
+ background:#e8e2d7!important;
+ height:6px!important;
+}
+.week-prog-fill,.wi-fill,.top-bar-fill{
+ background:var(--accent)!important;
+}
+@media (max-width:860px){
+ .main{flex-direction:column!important;}
+ .sidebar{width:100%!important;}
+}
+</style>
+
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Top bar ── -->
+  <header class="top-bar">
+    <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" aria-label="Menu">☰</button>
+    <div class="top-bar-logo">AI<span>.</span>Prep<span>.</span>Tracker</div>
+    <div class="top-bar-spacer"></div>
+    <div class="top-bar-progress">
+      <span id="topBarCount">0 / 50</span>
+      <div class="top-bar-bar"><div class="top-bar-fill" id="topBarFill" style="width:0%"></div></div>
+      <span id="topBarPct">0%</span>
+    </div>
+  </header>
+
+  <div class="main">
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">10 Weeks</div>
+        <ul class="week-list" id="weekList"></ul>
+      </div>
+
+      <div class="sidebar-settings">
+        <div class="sidebar-label">Settings</div>
+
+        <div class="setting-row">
+          <label class="setting-label" for="startDateInput">Start date</label>
+          <input type="date" id="startDateInput" class="setting-input">
+          <div class="setting-hint" id="dateHint"></div>
+        </div>
+
+        <div class="setting-row">
+          <label class="setting-toggle-row">
+            <input type="checkbox" id="skipWeekendsToggle" onchange="onSkipWeekendsChange()">
+            <span class="setting-toggle-label">Skip weekends</span>
+          </label>
+        </div>
+
+        <button class="sidebar-btn" onclick="resetStartDate()">↺ Reset date</button>
+        <button class="sidebar-btn danger" onclick="resetAll()">⚠ Reset all progress</button>
+      </div>
+
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+    <!-- ── Content ── -->
+    <main class="content" id="content">
+      <div id="weeksContainer"></div>
+    </main>
+
+  </div>
+</div>
+
+<script>
+const WEEKS = [
+{
+  num:1, range:"Jun 22 – Jun 26", title:"LLM Foundations & Tokenization",
+  goal:"Build the vocabulary and mental model every later week depends on — tokens, attention, training lifecycle.",
+  days:[
+    {topic:"LLM fundamentals", sub:"Tokenization & vectorization", hrs:2,
+      concepts:"Byte-pair encoding, subword tokens, why token count drives cost/latency; embeddings as vectors",
+      videos:[["Andrej Karpathy – Intro to LLMs","https://www.youtube.com/watch?v=zjkBMFhNj_g"]],
+      articles:[["Prompt Engineering Guide","https://www.promptingguide.ai/"]]},
+    {topic:"LLM fundamentals", sub:"Attention mechanism", hrs:2,
+      concepts:"Self-attention, multi-head attention, Q/K/V intuition (conceptual, not derivation-heavy)",
+      videos:[["Andrej Karpathy – Intro to LLMs","https://www.youtube.com/watch?v=zjkBMFhNj_g"]],
+      articles:[]},
+    {topic:"LLM fundamentals", sub:"Pre-training vs post-training", hrs:2,
+      concepts:"Next-token prediction, instruction tuning, RLHF at a high level — why it matters for system design",
+      videos:[],
+      articles:[["Claude Cookbooks","https://github.com/anthropics/anthropic-cookbook"]]},
+    {topic:"LLM fundamentals", sub:"LLM evaluation basics", hrs:2,
+      concepts:"Perplexity vs task-based evals, why benchmark scores don't predict production behavior",
+      videos:[],
+      articles:[["DeepEval docs","https://deepeval.com/docs/getting-started"]]},
+    {topic:"LLM fundamentals", sub:"End-to-end LLM lifecycle", hrs:2.5,
+      concepts:"Map the full lifecycle: data → pretrain → finetune → eval → deploy → monitor. Write a 1-page summary in your own words",
+      videos:[],
+      articles:[]},
+  ]
+},
+{
+  num:2, range:"Jun 29 – Jul 3", title:"Quantization & Fine-Tuning (light pass)",
+  goal:"Know enough to discuss tradeoffs in interviews — you are not becoming an ML researcher.",
+  days:[
+    {topic:"Model optimization", sub:"Quantization basics", hrs:1.5,
+      concepts:"FP32 vs FP16 vs INT8, why quantization trades accuracy for speed/cost",
+      videos:[["Quantization Explained – IBM Tech","https://www.youtube.com/watch?v=0VdNflU08yA"]],
+      articles:[]},
+    {topic:"Model optimization", sub:"Attention optimizations", hrs:1.5,
+      concepts:"KV-caching, flash attention — conceptual understanding for cost/latency discussions",
+      videos:[],
+      articles:[]},
+    {topic:"Fine-tuning", sub:"LoRA / QLoRA", hrs:2,
+      concepts:"Low-rank adaptation intuition, when fine-tuning beats prompting/RAG (and when it doesn't)",
+      videos:[["LoRA explained – StatQuest","https://www.youtube.com/watch?v=dA-NhCtrrVE"]],
+      articles:[]},
+    {topic:"Fine-tuning", sub:"Dataset prep → train → eval", hrs:2,
+      concepts:"What a fine-tuning pipeline looks like end to end; where this fits vs RAG in your own platform decisions",
+      videos:[],
+      articles:[]},
+    {topic:"Review + journal", sub:"Week 1–2 synthesis", hrs:2,
+      concepts:"Write: 'When would I recommend fine-tuning vs RAG vs prompting?' — 1 page, use in interviews",
+      videos:[],
+      articles:[]},
+  ]
+},
+{
+  num:3, range:"Jul 6 – Jul 10", title:"RAG Deep Dive",
+  goal:"Sharpen and formalize what you already know about retrieval; fill terminology gaps.",
+  days:[
+    {topic:"RAG", sub:"Chunking strategies", hrs:2,
+      concepts:"Fixed-size, semantic, recursive chunking; how chunk size affects retrieval precision/recall",
+      videos:[["RAG From Scratch – LangChain","https://www.youtube.com/watch?v=sVcwVQRHIc8"]],
+      articles:[["Ragas Quick Start","https://docs.ragas.io/en/stable/getstarted/quickstart/"]]},
+    {topic:"RAG", sub:"Data ingestion & indexing", hrs:2,
+      concepts:"Ingestion pipelines, metadata tagging at index time — ties directly to FAIR data principles",
+      videos:[],
+      articles:[["LangChain RAG Tutorial","https://python.langchain.com/docs/tutorials/rag/"]]},
+    {topic:"RAG", sub:"Vector embeddings & DBs", hrs:2,
+      concepts:"Embedding models, Pinecone/OpenSearch/pgvector tradeoffs, when to self-host vs managed",
+      videos:[["Vector Databases explained","https://www.youtube.com/watch?v=klTvEwg3oJ4"]],
+      articles:[]},
+    {topic:"RAG", sub:"Search algorithms (ANN)", hrs:2,
+      concepts:"HNSW and IVF index structures — how approximate nearest neighbor search actually works",
+      videos:[],
+      articles:[]},
+    {topic:"RAG", sub:"Reranking", hrs:2,
+      concepts:"Cross-encoder rerankers, two-stage retrieval (retrieve broad, rerank precise)",
+      videos:[],
+      articles:[["Ragas Quick Start","https://docs.ragas.io/en/stable/getstarted/quickstart/"]]},
+  ]
+},
+{
+  num:4, range:"Jul 13 – Jul 17", title:"Hands-on RAG + AI Safety",
+  goal:"Build a working RAG system end to end and learn the guardrail patterns production AI requires.",
+  days:[
+    {topic:"RAG advanced", sub:"Query rewriting & HyDE", hrs:2,
+      concepts:"Hypothetical Document Embeddings — improving retrieval when the user query is vague",
+      videos:[],
+      articles:[["LangChain RAG Tutorial","https://python.langchain.com/docs/tutorials/rag/"]]},
+    {topic:"AI safety", sub:"Input/output guardrails", hrs:2,
+      concepts:"Content filtering, output validation, structured-output enforcement patterns",
+      videos:[],
+      articles:[["Claude Cookbooks","https://github.com/anthropics/anthropic-cookbook"]]},
+    {topic:"AI safety", sub:"Prompt injection & intent classification", hrs:2,
+      concepts:"Direct/indirect prompt injection, how to classify and block malicious intent before execution",
+      videos:[["Prompt Injection explained – Computerphile","https://www.youtube.com/watch?v=Sv5OLj2nVAQ"]],
+      articles:[]},
+    {topic:"Coding project", sub:"Build a RAG chatbot (Part 1)", hrs:2.5,
+      concepts:"Stand up a minimal RAG app via API calls — embed, store, retrieve, generate, cite sources",
+      videos:[],
+      articles:[["OpenAI Cookbook","https://cookbook.openai.com/"],["Claude Cookbooks","https://github.com/anthropics/anthropic-cookbook"]]},
+    {topic:"Coding project", sub:"Build a RAG chatbot (Part 2)", hrs:2.5,
+      concepts:"Add guardrails + source citation to your chatbot; commit to GitHub as portfolio piece #1",
+      videos:[],
+      articles:[]},
+  ]
+},
+{
+  num:5, range:"Jul 20 – Jul 24", title:"AI Agents & Tool Calling",
+  goal:"The single highest-leverage week of the plan — agentic systems are the core of AI engineering today.",
+  days:[
+    {topic:"Agents", sub:"LLM vs Agent vs Multi-Agent", hrs:2,
+      concepts:"Define the boundary precisely — what makes something agentic vs just an LLM call with a system prompt",
+      videos:[["AI Agents explained – IBM Tech","https://www.youtube.com/watch?v=F8NKVhkZZWI"]],
+      articles:[["LLM/RAG/Agent/MCP mental model","https://dev.to/tak089/llm-rag-agent-and-mcp-cgo"]]},
+    {topic:"Agents", sub:"ReAct pattern", hrs:2,
+      concepts:"Reason+Act loop — observe, think, act, observe again; why this beats single-shot prompting for complex tasks",
+      videos:[["ReAct: Reasoning + Acting","https://www.youtube.com/watch?v=Eug2clsLtFs"]],
+      articles:[]},
+    {topic:"Agents", sub:"Tool use & function calling", hrs:2,
+      concepts:"Defining tools, structured tool schemas, how LLMs decide which tool to call, error handling in tool loops",
+      videos:[],
+      articles:[["Claude Cookbooks","https://github.com/anthropics/anthropic-cookbook"]]},
+    {topic:"Agents", sub:"Orchestration patterns", hrs:2,
+      concepts:"Orchestrator owns control flow; LLM owns reasoning — supervisor/worker, sequential, parallel patterns",
+      videos:[],
+      articles:[["Neural Maze – Agent Design Patterns","https://theneuralmaze.substack.com/"]]},
+    {topic:"Coding project", sub:"Customer support agent", hrs:2.5,
+      concepts:"Build a tool-calling agent (ReAct-based) handling a multi-step support workflow — portfolio piece #2",
+      videos:[],
+      articles:[]},
+  ]
+},
+{
+  num:6, range:"Jul 27 – Jul 31", title:"MCP, Context Engineering & Multi-Agent Systems",
+  goal:"The newest and most differentiating material — most candidates at your level don't have this yet.",
+  days:[
+    {topic:"Context engineering", sub:"Context window management", hrs:2,
+      concepts:"Compression, sliding-window memory, summarization-before-injection strategies",
+      videos:[["Context Windows explained","https://www.youtube.com/watch?v=1MgNDFMH9Xk"]],
+      articles:[]},
+    {topic:"Memory in agents", sub:"Short-term vs long-term memory", hrs:2,
+      concepts:"Conversation memory vs persistent fact stores; structured memory extraction patterns",
+      videos:[],
+      articles:[["Technical Guide to LLMs/RAG/Agents/MCP","https://medium.com/@h.stoychev87/from-prompts-to-pipelines-a-technical-guide-to-llms-agents-and-mcp-a1068cada7d6"]]},
+    {topic:"MCP", sub:"Model Context Protocol", hrs:2,
+      concepts:"What MCP standardizes, how it differs from a plain API wrapper, why it matters for tool interoperability",
+      videos:[["MCP explained in 5 minutes","https://www.youtube.com/watch?v=7j_NE6Pjv-E"]],
+      articles:[["Official MCP docs","https://modelcontextprotocol.io/"]]},
+    {topic:"Multi-agent systems", sub:"Multi-agent coordination", hrs:2,
+      concepts:"Supervisor/worker patterns, agent-to-agent handoff, failure isolation between agents",
+      videos:[],
+      articles:[["Enterprise MCP Systems","https://theneuralmaze.substack.com/"]]},
+    {topic:"Coding project", sub:"MCP agent with memory", hrs:2.5,
+      concepts:"Build an MCP-based agent with persistent memory; optimize agentic flow for latency/cost — portfolio piece #3",
+      videos:[],
+      articles:[["Official MCP docs","https://modelcontextprotocol.io/"]]},
+  ]
+},
+{
+  num:7, range:"Aug 3 – Aug 7", title:"Evals & Production AI Practices",
+  goal:"The differentiator that separates senior AI engineers from the rest — evals are how production AI stays reliable.",
+  days:[
+    {topic:"Evals", sub:"Why evals prevent hallucination", hrs:2,
+      concepts:"Eval-driven development loop — write evals before shipping prompt/model changes",
+      videos:[["LLM Evals explained","https://www.youtube.com/watch?v=r9_P5mFAOQs"]],
+      articles:[["DeepEval docs","https://deepeval.com/docs/getting-started"]]},
+    {topic:"Evals", sub:"Manual evals & rubric design", hrs:2,
+      concepts:"Human annotation, golden datasets, rubric scoring criteria, when manual beats automated evals",
+      videos:[],
+      articles:[["Agent eval metrics guide","https://www.confident-ai.com/blog/llm-agent-evaluation-complete-guide"]]},
+    {topic:"Evals", sub:"LLM-as-judge", hrs:2,
+      concepts:"Using a second LLM to score outputs; rubric design, bias pitfalls of judge models",
+      videos:[],
+      articles:[["DeepEval RAG Quickstart","https://deepeval.com/docs/getting-started-rag"],["RAGAS metric in DeepEval","https://deepeval.com/docs/metrics-ragas"]]},
+    {topic:"Evals", sub:"RAGAS & faithfulness scoring", hrs:2,
+      concepts:"Faithfulness, answer relevancy, context precision/recall metrics for RAG specifically",
+      videos:[],
+      articles:[["Ragas Quick Start","https://docs.ragas.io/en/stable/getstarted/quickstart/"]]},
+    {topic:"Coding project", sub:"Build your own LLM judge", hrs:2.5,
+      concepts:"Implement an LLM-as-judge eval harness for your Week 4/5/6 projects — portfolio piece #4",
+      videos:[],
+      articles:[["DeepEval (GitHub)","https://github.com/confident-ai/deepeval"]]},
+  ]
+},
+{
+  num:8, range:"Aug 10 – Aug 14", title:"Agentic System Design at Scale",
+  goal:"This is the actual interview format top AI engineering teams use right now — practice it directly.",
+  days:[
+    {topic:"System design", sub:"Agents at scale", hrs:2,
+      concepts:"Distributed agent execution, queueing, rate limiting for LLM APIs, GPU resource allocation basics",
+      videos:[["System Design for ML","https://www.youtube.com/watch?v=0163tSJdLvo"]],
+      articles:[["Designing ML Systems – GitHub Notes","https://github.com/chiphuyen/machine-learning-systems-design"]]},
+    {topic:"System design", sub:"MCP vs API wrappers", hrs:2,
+      concepts:"Tradeoffs at scale — when standardized protocol overhead is worth it vs a thin custom wrapper",
+      videos:[],
+      articles:[["Technical Guide to LLMs/RAG/Agents/MCP","https://medium.com/@h.stoychev87/from-prompts-to-pipelines-a-technical-guide-to-llms-agents-and-mcp-a1068cada7d6"]]},
+    {topic:"System design", sub:"Design tradeoffs framework", hrs:2,
+      concepts:"Cost vs latency vs observability vs reliability — practice articulating tradeoffs out loud",
+      videos:[],
+      articles:[["GenAI System Design Guide (PracHub)","https://prachub.com/resources/genai-llm-system-design-interview-guide-2026"]]},
+    {topic:"Mock interview", sub:"Practice round 1", hrs:2,
+      concepts:"Self/peer mock: 'Design a high-level system for an LLM responding to a user query' — record yourself",
+      videos:[],
+      articles:[]},
+    {topic:"Mock interview", sub:"Practice round 2", hrs:2.5,
+      concepts:"Self/peer mock: 'Design safeguards for an agent that can take actions on a user's behalf'",
+      videos:[],
+      articles:[]},
+  ]
+},
+{
+  num:9, range:"Aug 17 – Aug 21", title:"Multimodal & Reasoning Models (light pass)",
+  goal:"Lower priority for platform-engineering roles — skim for awareness, don't over-invest.",
+  days:[
+    {topic:"Multimodal", sub:"Multimodal models overview", hrs:1.5,
+      concepts:"How text+image models are trained at a conceptual level — enough to discuss, not implement",
+      videos:[["Multimodal AI explained","https://www.youtube.com/watch?v=WkoytlA3MoQ"]],
+      articles:[]},
+    {topic:"Multimodal", sub:"CLIP & embeddings", hrs:1,
+      concepts:"Contrastive learning for image-text alignment — high-level intuition only",
+      videos:[],
+      articles:[]},
+    {topic:"Reasoning models", sub:"Chain-of-thought (CoT)", hrs:1.5,
+      concepts:"Why CoT improves reasoning, when to use it vs when it adds unnecessary cost",
+      videos:[["Chain of Thought Prompting","https://www.youtube.com/watch?v=H4YK_7MAckk"]],
+      articles:[]},
+    {topic:"Reasoning models", sub:"RLHF (revisit)", hrs:1,
+      concepts:"Tie back to Week 1 — how RLHF shapes the reasoning behavior you're designing systems around",
+      videos:[],
+      articles:[]},
+    {topic:"Buffer / catch-up", sub:"Review weak spots", hrs:2,
+      concepts:"Use this day to revisit any Week 1–8 topic that didn't stick — no new material",
+      videos:[],
+      articles:[]},
+  ]
+},
+{
+  num:10, range:"Aug 24 – Aug 28", title:"Capstone Project & Portfolio Assembly",
+  goal:"Turn 9 weeks of learning into one production-grade artifact you can show in interviews.",
+  days:[
+    {topic:"Capstone", sub:"Problem selection", hrs:2,
+      concepts:"Build a Personal Knowledge Assistant: RAG over your own notes/PDFs, served via an MCP server, with an LLM-as-judge eval harness. Covers every week in one project — define scope, data sources, and success metrics",
+      videos:[],
+      articles:[]},
+    {topic:"Capstone", sub:"Architecture & build (Part 1)", hrs:2.5,
+      concepts:"Design doc: ingestion pipeline (chunk + embed your notes into a vector store), MCP server exposing a search tool, orchestrator agent that retrieves context and answers questions. Write it before touching code",
+      videos:[],
+      articles:[["OpenAI Cookbook","https://cookbook.openai.com/"]]},
+    {topic:"Capstone", sub:"Architecture & build (Part 2)", hrs:2.5,
+      concepts:"Implement the MCP server + RAG retrieval layer. Connect the agent orchestrator. Add source citations to every answer. Wire in the DeepEval LLM-judge harness from Week 7 to score faithfulness and relevancy",
+      videos:[],
+      articles:[["DeepEval (GitHub)","https://github.com/confident-ai/deepeval"]]},
+    {topic:"Capstone", sub:"Metrics & evaluation", hrs:2,
+      concepts:"Run RAGAS metrics (faithfulness, context precision, answer relevancy) across 20+ test questions from your own notes. Record baseline scores. Tune chunking or prompts to improve at least one metric by 10%",
+      videos:[],
+      articles:[]},
+    {topic:"Portfolio wrap-up", sub:"Polish & publish", hrs:2.5,
+      concepts:"Write a README: architecture diagram (RAG pipeline + MCP server + agent), eval results table with real numbers, and a 200-word pitch — 'I built a personal knowledge assistant over my own study notes using RAG + MCP + LLM-as-judge evals'. Push to GitHub as portfolio piece #5",
+      videos:[],
+      articles:[]},
+  ]
+},
+];
+
+// ══════════════════════════════════════════════
+// CONSTANTS & STATE
+// ══════════════════════════════════════════════
+const SK_STATE   = 'aiprep:state';
+const SK_START   = 'aiprep:startDate';
+const SK_SKIPWE  = 'aiprep:skipWeekends';
+const SK_SKIPPED = 'aiprep:skippedDays';
+
+let state       = {};
+let skippedDays = {};
+let startDate   = '';       // Set by user — no default hardcoded
+let skipWeekends = false;
+let activeWeek  = 0;
+
+// ══════════════════════════════════════════════
+// DATE ENGINE
+// ══════════════════════════════════════════════
+function calcDate(weekIdx, dayIdx) {
+  if (!startDate) return null;
+  const base = new Date(startDate + 'T00:00:00');
+  const target = weekIdx * 5 + dayIdx;
+  let current = new Date(base);
+  if (skipWeekends) {
+    let counted = 0;
+    // Advance base past weekends first
+    while (current.getDay() === 0 || current.getDay() === 6) {
+      current.setDate(current.getDate() + 1);
+    }
+    while (counted < target) {
+      current.setDate(current.getDate() + 1);
+      if (current.getDay() !== 0 && current.getDay() !== 6) counted++;
+    }
+  } else {
+    current.setDate(current.getDate() + target);
+  }
+  return current.toISOString().slice(0, 10);
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function dayKey(wi, di) { return `W${wi + 1}-D${di + 1}`; }
+
+function getDay(key) {
+  if (!state[key]) state[key] = { done: false, notes: '' };
+  return state[key];
+}
+
+// ══════════════════════════════════════════════
+// PERSISTENCE
+// ══════════════════════════════════════════════
+function loadState() {
+  try {
+    const s = localStorage.getItem(SK_STATE);   if (s) state       = JSON.parse(s);
+    const sd = localStorage.getItem(SK_START);  if (sd) startDate  = sd;
+    const sw = localStorage.getItem(SK_SKIPWE); if (sw) skipWeekends = sw === 'true';
+    const sk = localStorage.getItem(SK_SKIPPED);if (sk) skippedDays = JSON.parse(sk);
+  } catch(e) {}
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(SK_STATE,   JSON.stringify(state));
+    localStorage.setItem(SK_SKIPPED, JSON.stringify(skippedDays));
+  } catch(e) {}
+}
+
+function savePrefs() {
+  try {
+    localStorage.setItem(SK_START,  startDate);
+    localStorage.setItem(SK_SKIPWE, String(skipWeekends));
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════
+// DATE SETTINGS UI
+// ══════════════════════════════════════════════
+function initDateBar() {
+  const input = document.getElementById('startDateInput');
+  input.value = startDate;
+  document.getElementById('skipWeekendsToggle').checked = skipWeekends;
+  updateDateHint();
+  input.addEventListener('change', () => {
+    if (!input.value) return;
+    startDate = input.value;
+    savePrefs();
+    updateDateHint();
+    rebuildDates();
+    updateSidebarDates();
+  });
+}
+
+function updateDateHint() {
+  const hint = document.getElementById('dateHint');
+  if (!startDate) { hint.textContent = 'No date set yet'; return; }
+  const d = new Date(startDate + 'T00:00:00');
+  let cur = new Date(d), added = 0;
+  while (added < 49) {
+    cur.setDate(cur.getDate() + 1);
+    if (!skipWeekends || (cur.getDay() !== 0 && cur.getDay() !== 6)) added++;
+  }
+  const o = { month: 'short', day: 'numeric' };
+  hint.textContent = d.toLocaleDateString('en-US', o) + ' → ' + cur.toLocaleDateString('en-US', o);
+}
+
+function onSkipWeekendsChange() {
+  skipWeekends = document.getElementById('skipWeekendsToggle').checked;
+  savePrefs();
+  updateDateHint();
+  rebuildDates();
+  updateSidebarDates();
+}
+
+function resetStartDate() {
+  startDate = '';
+  skipWeekends = false;
+  document.getElementById('startDateInput').value = '';
+  document.getElementById('skipWeekendsToggle').checked = false;
+  savePrefs();
+  updateDateHint();
+  rebuildDates();
+  updateSidebarDates();
+}
+
+function rebuildDates() {
+  WEEKS.forEach((w, wi) => {
+    w.days.forEach((d, di) => {
+      const key = dayKey(wi, di);
+      const iso = calcDate(wi, di);
+      const el  = document.getElementById('daydate-' + key);
+      if (el) el.textContent = fmtDate(iso);
+    });
+  });
+}
+
+function updateSidebarDates() {
+  // Update week range labels in sidebar
+  WEEKS.forEach((w, wi) => {
+    const el = document.getElementById('sidebar-range-' + wi);
+    if (!el) return;
+    if (!startDate) { el.textContent = ''; return; }
+    const d1 = fmtDate(calcDate(wi, 0));
+    const d5 = fmtDate(calcDate(wi, 4));
+    el.textContent = d1 + ' → ' + d5;
+  });
+}
+
+// ══════════════════════════════════════════════
+// BUILD UI
+// ══════════════════════════════════════════════
+function buildSidebar() {
+  const list = document.getElementById('weekList');
+  list.innerHTML = WEEKS.map((w, i) => `
+    <li class="week-item ${i === 0 ? 'active' : ''}" id="sidebar-week-${i}" onclick="showWeek(${i})">
+      <span class="wi-num">W${w.num}</span>
+      <div style="flex:1;min-width:0">
+        <div class="wi-title">${w.title}</div>
+        <div class="setting-hint" id="sidebar-range-${i}"></div>
+      </div>
+      <div class="wi-bar-wrap"><div class="wi-bar"><div class="wi-fill" id="wfill-${i}" style="width:0%"></div></div></div>
+    </li>
+  `).join('');
+}
+
+function dayCard(wi, di, d) {
+  const key   = dayKey(wi, di);
+  const iso   = calcDate(wi, di);
+  const hasVideos   = d.videos   && d.videos.length   > 0;
+  const hasArticles = d.articles && d.articles.length > 0;
+  const resHtml = (hasVideos || hasArticles) ? `
+    <div class="day-resources">
+      ${hasVideos ? `
+        <div class="res-section">
+          <div class="res-label res-label-video">▶ Videos</div>
+          ${d.videos.map(r => `<a class="res-link res-link-video" href="${r[1]}" target="_blank" rel="noopener noreferrer">${r[0]} ↗</a>`).join('')}
+        </div>` : ''}
+      ${hasArticles ? `
+        <div class="res-section">
+          <div class="res-label res-label-article">📄 Articles & Docs</div>
+          ${d.articles.map(r => `<a class="res-link res-link-article" href="${r[1]}" target="_blank" rel="noopener noreferrer">${r[0]} ↗</a>`).join('')}
+        </div>` : ''}
+    </div>` : '';
+  return `
+  <div class="day-card" id="day-${key}">
+    <div class="day-top" onclick="toggleExpand('${key}')">
+      <input type="checkbox" class="day-check" id="check-${key}"
+        onclick="event.stopPropagation()"
+        onchange="toggleDone('${key}', ${wi})">
+      <div class="day-meta">
+        <div class="day-date-row">
+          <span class="day-date" id="daydate-${key}">${fmtDate(iso)}</span>
+          <span class="day-topic-tag">${d.topic}</span>
+        </div>
+        <div class="day-sub">${d.sub}</div>
+      </div>
+      <div class="day-right">
+        <span class="day-hrs">${d.hrs}h</span>
+        <button class="day-expand-btn" aria-label="Expand">▾</button>
+      </div>
+    </div>
+    <div class="day-body" id="body-${key}">
+      <div class="day-concepts"><b>Concepts:</b> ${d.concepts}</div>
+      ${resHtml}
+      <span class="day-notes-label">Notes</span>
+      <textarea class="day-notes" id="notes-${key}"
+        placeholder="What you learned, links, questions to follow up..."
+        onblur="saveNotes('${key}')"></textarea>
+      <div class="day-footer">
+        <div class="save-status" id="status-${key}"></div>
+        <button class="skip-day-btn" id="skipbtn-${key}" onclick="toggleSkipDay('${key}')">Skip day</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildWeeks() {
+  document.getElementById('weeksContainer').innerHTML = WEEKS.map((w, wi) => `
+    <div class="week-panel ${wi === 0 ? 'active' : ''}" id="week-${wi}">
+      <div class="week-heading">
+        <span class="week-num-badge">WEEK ${w.num}</span>
+        <div>
+          <div class="week-title">${w.title}</div>
+          <div class="week-dates" id="wdates-${wi}"></div>
+        </div>
+      </div>
+      <div class="week-goal">${w.goal}</div>
+      <div class="week-prog-wrap">
+        <div class="week-prog-meta">
+          <span id="wlabel-${wi}">0 / 5 days complete</span>
+          <span id="wpct-${wi}">0%</span>
+        </div>
+        <div class="week-prog-bar"><div class="week-prog-fill" id="wpfill-${wi}" style="width:0%"></div></div>
+      </div>
+      ${w.days.map((d, di) => dayCard(wi, di, d)).join('')}
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════════
+// INTERACTIONS
+// ══════════════════════════════════════════════
+function showWeek(i) {
+  document.querySelectorAll('.week-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.week-item').forEach(a => a.classList.remove('active'));
+  document.getElementById('week-' + i).classList.add('active');
+  document.getElementById('sidebar-week-' + i).classList.add('active');
+  activeWeek = i;
+  document.getElementById('content').scrollTo(0, 0);
+  closeMobileSidebar();
+}
+
+function toggleExpand(key) {
+  const card = document.getElementById('day-' + key);
+  card.classList.toggle('expanded');
+}
+
+function toggleDone(key, wi) {
+  const day = getDay(key);
+  day.done = document.getElementById('check-' + key).checked;
+  document.getElementById('day-' + key).classList.toggle('done', day.done);
+  // Auto-collapse if unchecked, auto-expand if checking
+  if (!day.done) document.getElementById('day-' + key).classList.remove('expanded');
+  saveState();
+  updateProgress();
+}
+
+function saveNotes(key) {
+  getDay(key).notes = document.getElementById('notes-' + key).value;
+  saveState();
+  const el = document.getElementById('status-' + key);
+  el.textContent = '✓ saved'; el.className = 'save-status saved';
+  setTimeout(() => { el.textContent = ''; el.className = 'save-status'; }, 1500);
+}
+
+function toggleSkipDay(key) {
+  if (skippedDays[key]) delete skippedDays[key];
+  else skippedDays[key] = true;
+  saveState();
+  const card = document.getElementById('day-' + key);
+  const btn  = document.getElementById('skipbtn-' + key);
+  const isSkipped = !!skippedDays[key];
+  card.classList.toggle('skipped', isSkipped);
+  btn.textContent = isSkipped ? 'Unskip' : 'Skip day';
+  updateProgress();
+}
+
+// ══════════════════════════════════════════════
+// PROGRESS
+// ══════════════════════════════════════════════
+function updateProgress() {
+  let total = 0, done = 0;
+  WEEKS.forEach((w, wi) => {
+    let wDone = 0, wTotal = 0;
+    w.days.forEach((d, di) => {
+      const key = dayKey(wi, di);
+      if (skippedDays[key]) return;
+      wTotal++; total++;
+      if (getDay(key).done) { wDone++; done++; }
+    });
+    const pct = wTotal > 0 ? Math.round((wDone / wTotal) * 100) : 0;
+    document.getElementById('wfill-' + wi).style.width = pct + '%';
+    document.getElementById('wpfill-' + wi).style.width = pct + '%';
+    document.getElementById('wlabel-' + wi).textContent = `${wDone} / ${wTotal} days complete`;
+    document.getElementById('wpct-' + wi).textContent = pct + '%';
+    const sidebarItem = document.getElementById('sidebar-week-' + wi);
+    if (sidebarItem) sidebarItem.classList.toggle('done', wDone > 0 && wDone === wTotal);
+  });
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('topBarCount').textContent = `${done} / ${total}`;
+  document.getElementById('topBarFill').style.width  = pct + '%';
+  document.getElementById('topBarPct').textContent   = pct + '%';
+}
+
+function populateUI() {
+  WEEKS.forEach((w, wi) => {
+    w.days.forEach((d, di) => {
+      const key  = dayKey(wi, di);
+      const day  = getDay(key);
+      const chk  = document.getElementById('check-' + key);
+      const ntx  = document.getElementById('notes-' + key);
+      const card = document.getElementById('day-' + key);
+      const btn  = document.getElementById('skipbtn-' + key);
+      if (chk)  chk.checked = day.done;
+      if (ntx)  ntx.value   = day.notes;
+      if (card) { card.classList.toggle('done', day.done); card.classList.toggle('skipped', !!skippedDays[key]); }
+      if (btn)  btn.textContent = skippedDays[key] ? 'Unskip' : 'Skip day';
+    });
+  });
+  updateProgress();
+  updateSidebarDates();
+}
+
+function resetAll() {
+  if (!confirm('Reset all check-ins and notes? This cannot be undone.')) return;
+  state = {}; skippedDays = {};
+  try { localStorage.removeItem(SK_STATE); localStorage.removeItem(SK_SKIPPED); } catch(e) {}
+  populateUI();
+}
+
+// ══════════════════════════════════════════════
+// MOBILE SIDEBAR
+// ══════════════════════════════════════════════
+function toggleMobileSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeMobileSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+function init() {
+  loadState();
+  buildSidebar();
+  buildWeeks();
+  initDateBar();
+  populateUI();
+  updateSidebarDates();
+}
+
+init();
+</script>
+</body>
+</html>
