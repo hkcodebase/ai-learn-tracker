@@ -17,8 +17,8 @@
   --blue-lt:   #e8f1f8;
   --green:     #22863a;
   --green-lt:  #e6f4ea;
-  --amber:     #b45309;
-  --amber-lt:  #fef3cd;
+  --amber:     #0047FF;
+  --amber-lt:  #DBEAFE;
   --red:       #a32d2d;
   --red-lt:    #fdecea;
   --gray-100:  #f7f8fa;
@@ -579,8 +579,8 @@ const WEEKS = [
       articles:[]},
     {topic:"LLM fundamentals", sub:"Pre-training vs post-training", hrs:2,
       concepts:"Next-token prediction, instruction tuning, RLHF at a high level — why it matters for system design",
-      videos:[],
-      articles:[["Claude Cookbooks","https://github.com/anthropics/anthropic-cookbook"]]},
+      videos:[["Intro to Large Language Models – Karpathy","https://www.youtube.com/watch?v=zjkBMFhNj_g"]],
+      articles:[["Illustrating RLHF – Hugging Face blog","https://huggingface.co/blog/rlhf"],["RLHF & Post-Training Book – Nathan Lambert","https://rlhfbook.com/c/01-introduction"],["Instruction Tuning Survey – arXiv","https://arxiv.org/html/2308.10792v9"]]},
     {topic:"LLM fundamentals", sub:"LLM evaluation basics", hrs:2,
       concepts:"Perplexity vs task-based evals, why benchmark scores don't predict production behavior",
       videos:[],
@@ -597,15 +597,15 @@ const WEEKS = [
   days:[
     {topic:"Model optimization", sub:"Quantization basics", hrs:1.5,
       concepts:"FP32 vs FP16 vs INT8, why quantization trades accuracy for speed/cost",
-      videos:[["Quantization Explained – IBM Tech","https://www.youtube.com/watch?v=0VdNflU08yA"]],
-      articles:[]},
+      videos:[["What is LLM Quantization? – explained","https://www.youtube.com/watch?v=qqN63hbziaI"]],
+      articles:[["A Visual Guide to Quantization – Maarten Grootendorst (free)","https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-quantization"],["HuggingFace Quantization docs","https://huggingface.co/docs/transformers/quantization"]]},
     {topic:"Model optimization", sub:"Attention optimizations", hrs:1.5,
       concepts:"KV-caching, flash attention — conceptual understanding for cost/latency discussions",
-      videos:[],
-      articles:[]},
+      videos:[["LLM inference: Architecture, KV Cache & Flash Attention","https://www.youtube.com/watch?v=jk2FsJxZFo8"]],
+      articles:[["KV Cache & Flash Attention: interactive walkthrough (free)","https://kvcache.cobanov.dev/"],["LLM Inference Series: KV Caching explained – Medium","https://medium.com/@plienhar/llm-inference-series-3-kv-caching-unveiled-048152e461c8"]]},
     {topic:"Fine-tuning", sub:"LoRA / QLoRA", hrs:2,
       concepts:"Low-rank adaptation intuition, when fine-tuning beats prompting/RAG (and when it doesn't)",
-      videos:[["LoRA explained – StatQuest","https://www.youtube.com/watch?v=dA-NhCtrrVE"]],
+      videos:[["LoRA explained – StatQuest","https://www.youtube.com/watch?v=t509sv5MT0w"]],
       articles:[]},
     {topic:"Fine-tuning", sub:"Dataset prep → train → eval", hrs:2,
       concepts:"What a fine-tuning pipeline looks like end to end; where this fits vs RAG in your own platform decisions",
@@ -631,16 +631,16 @@ const WEEKS = [
       articles:[["LangChain RAG Tutorial","https://python.langchain.com/docs/tutorials/rag/"]]},
     {topic:"RAG", sub:"Vector embeddings & DBs", hrs:2,
       concepts:"Embedding models, Pinecone/OpenSearch/pgvector tradeoffs, when to self-host vs managed",
-      videos:[["Vector Databases explained","https://www.youtube.com/watch?v=klTvEwg3oJ4"]],
+      videos:[["Vector Databases explained","https://www.youtube.com/watch?v=dN0lsF2cvm4"]],
       articles:[]},
     {topic:"RAG", sub:"Search algorithms (ANN)", hrs:2,
       concepts:"HNSW and IVF index structures — how approximate nearest neighbor search actually works",
-      videos:[],
-      articles:[]},
+      videos:[["HNSW Vector Search Explained (May 2024)","https://www.youtube.com/watch?v=77QH0Y2PYKg"]],
+      articles:[["ANN Search: IVF vs HNSW vs PQ – TiDB (free)","https://www.pingcap.com/article/approximate-nearest-neighbor-ann-search-explained-ivf-vs-hnsw-vs-pq/"],["Vector Search with FAISS: ANN Explained – PyImageSearch","https://pyimagesearch.com/2026/02/16/vector-search-with-faiss-approximate-nearest-neighbor-ann-explained/"]]},
     {topic:"RAG", sub:"Reranking", hrs:2,
       concepts:"Cross-encoder rerankers, two-stage retrieval (retrieve broad, rerank precise)",
-      videos:[],
-      articles:[["Ragas Quick Start","https://docs.ragas.io/en/stable/getstarted/quickstart/"]]},
+      videos:[["RAG From Scratch – LangChain","https://www.youtube.com/watch?v=sVcwVQRHIc8"]],
+      articles:[["Reranking for RAG: +40% Accuracy with Cross-Encoders (2025)","https://app.ailog.fr/en/blog/guides/reranking"],["Reranking in RAG: Cross-Encoders explained","https://eyka.com/blog/reranking-in-rag-enhancing-accuracy-with-cross-encoders/"]]},
   ]
 },
 {
@@ -679,7 +679,7 @@ const WEEKS = [
       articles:[["LLM/RAG/Agent/MCP mental model","https://dev.to/tak089/llm-rag-agent-and-mcp-cgo"]]},
     {topic:"Agents", sub:"ReAct pattern", hrs:2,
       concepts:"Reason+Act loop — observe, think, act, observe again; why this beats single-shot prompting for complex tasks",
-      videos:[["ReAct: Reasoning + Acting","https://www.youtube.com/watch?v=Eug2clsLtFs"]],
+      videos:[["ReAct: Reasoning + Acting","https://www.youtube.com/watch?v=Y2eD_I7eC5U"]],
       articles:[]},
     {topic:"Agents", sub:"Tool use & function calling", hrs:2,
       concepts:"Defining tools, structured tool schemas, how LLMs decide which tool to call, error handling in tool loops",
@@ -701,7 +701,7 @@ const WEEKS = [
   days:[
     {topic:"Context engineering", sub:"Context window management", hrs:2,
       concepts:"Compression, sliding-window memory, summarization-before-injection strategies",
-      videos:[["Context Windows explained","https://www.youtube.com/watch?v=1MgNDFMH9Xk"]],
+      videos:[["Context Windows explained","https://www.youtube.com/watch?v=BacJ6sEhqMo"]],
       articles:[]},
     {topic:"Memory in agents", sub:"Short-term vs long-term memory", hrs:2,
       concepts:"Conversation memory vs persistent fact stores; structured memory extraction patterns",
@@ -727,7 +727,7 @@ const WEEKS = [
   days:[
     {topic:"Evals", sub:"Why evals prevent hallucination", hrs:2,
       concepts:"Eval-driven development loop — write evals before shipping prompt/model changes",
-      videos:[["LLM Evals explained","https://www.youtube.com/watch?v=r9_P5mFAOQs"]],
+      videos:[["LLM Evals explained","https://www.youtube.com/watch?v=oRFF-122qXQ"]],
       articles:[["DeepEval docs","https://deepeval.com/docs/getting-started"]]},
     {topic:"Evals", sub:"Manual evals & rubric design", hrs:2,
       concepts:"Human annotation, golden datasets, rubric scoring criteria, when manual beats automated evals",
@@ -753,7 +753,7 @@ const WEEKS = [
   days:[
     {topic:"System design", sub:"Agents at scale", hrs:2,
       concepts:"Distributed agent execution, queueing, rate limiting for LLM APIs, GPU resource allocation basics",
-      videos:[["System Design for ML","https://www.youtube.com/watch?v=0163tSJdLvo"]],
+      videos:[["System Design for ML","https://www.youtube.com/watch?v=N3vHJcHBS-w"]],
       articles:[["Designing ML Systems – GitHub Notes","https://github.com/chiphuyen/machine-learning-systems-design"]]},
     {topic:"System design", sub:"MCP vs API wrappers", hrs:2,
       concepts:"Tradeoffs at scale — when standardized protocol overhead is worth it vs a thin custom wrapper",
@@ -779,7 +779,7 @@ const WEEKS = [
   days:[
     {topic:"Multimodal", sub:"Multimodal models overview", hrs:1.5,
       concepts:"How text+image models are trained at a conceptual level — enough to discuss, not implement",
-      videos:[["Multimodal AI explained","https://www.youtube.com/watch?v=WkoytlA3MoQ"]],
+      videos:[["Multimodal AI explained","https://www.youtube.com/watch?v=zjkBMFhNj_g"]],
       articles:[]},
     {topic:"Multimodal", sub:"CLIP & embeddings", hrs:1,
       concepts:"Contrastive learning for image-text alignment — high-level intuition only",
@@ -787,7 +787,7 @@ const WEEKS = [
       articles:[]},
     {topic:"Reasoning models", sub:"Chain-of-thought (CoT)", hrs:1.5,
       concepts:"Why CoT improves reasoning, when to use it vs when it adds unnecessary cost",
-      videos:[["Chain of Thought Prompting","https://www.youtube.com/watch?v=H4YK_7MAckk"]],
+      videos:[["Chain of Thought Prompting","https://www.youtube.com/watch?v=sVcwVQRHIc8"]],
       articles:[]},
     {topic:"Reasoning models", sub:"RLHF (revisit)", hrs:1,
       concepts:"Tie back to Week 1 — how RLHF shapes the reasoning behavior you're designing systems around",
